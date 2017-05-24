@@ -82,6 +82,7 @@ angular.module('publicApp', ['ui.router'])
             $rootScope.currentUser = user.name;
             $http.defaults.headers.common.Authorization = 'Bearer ' + user.token;
             $rootScope.token = user.token;
+            $rootScope.isAuthenticated = true;
             $rootScope.photoURI = 'http://graph.facebook.com/'+user.oid+'/picture';
             $rootScope.oid = user.oid;
             //$window.location.href = '/app'; //disabled because creates loop

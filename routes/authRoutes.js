@@ -1,11 +1,12 @@
 var express = require('express');
 var router = express.Router();
 var passport = require('../models/passport');
-var User = require('../models/userModel');
+// var User = require('../models/userModel');
+// var Location = require('../models/locationModel');
 
 router.use(function(req, res, next){
 
-console.log(req.headers);
+
 next();
 
 });

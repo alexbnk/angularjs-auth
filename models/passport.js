@@ -1,6 +1,7 @@
 var passport = require('passport');
 var FacebookStrategy = require('passport-facebook').Strategy;
 var User = require('../models/userModel');
+var userLocation = require('../models/locationModel');
 var jwt = require('jsonwebtoken');
 var config = require('../config/config'); // the secrets file
 
@@ -8,11 +9,36 @@ passport.use(new FacebookStrategy({
         clientID: '807300156089918',
         clientSecret: 'f6d0c03bed9964230ad800a88b9b2451',
         callbackURL: 'http://localhost:7000/auth/facebook/callback',
-        profileFields: ['email', 'displayName']
+        // profileFields: ['email', 'displayName']
+        profileFields: [ 'email','displayName', 'first_name','last_name', 'location', 'friends']
     },
     function(accessToken, refreshToken, profile, done) {
 
-        console.log(profile)
+      // var newLoc={};
+      //
+      // userLocation.findOne({'id': profile._json.location.id}, function(err, loc) {
+      //     if(!loc) {
+      //
+      //       loc = new userLocation({
+      //         id:profile._json.location.id,
+      //         provider: profile.provider,
+      //         data: profile._json.location.name,
+      //         created : new Date()
+      //
+      //       })
+      //     }
+      //     loc.save(function(err, newLocation) {
+      //       if (err) {
+      //         return done(err);
+      //       } else {
+      //
+      //         newLoc= newLocation;
+      //         console.log(newLocation);
+      //       }
+      //
+      //     })
+      //   })
+
 
         User.findOne({
             'id': profile.id
@@ -25,8 +51,12 @@ passport.use(new FacebookStrategy({
                 user = new User({
                     id: profile.id,
                     displayName: profile.displayName,
-                    eMail: profile.emails ? profile.emails[0].value : "",
-                    provider: 'facebook',
+                    first_name: profile.name.givenName,
+                    middle_name: profile.name.middleName,
+                    last_name: profile.name.familyName,
+                    location: profile._json.location.name,
+                    email: profile.emails ? profile.emails[0].value : "",
+                    provider: profile.provider,
                     loginCount: 0,
                     photos: 'http://graph.facebook.com/' + profile.id + '/picture'
 
@@ -36,7 +66,28 @@ passport.use(new FacebookStrategy({
                 user.loginCount++;
                 user.lastLogin = new Date();
 
-            }
+            };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             //finally let's save and call "done"
             user.save(function(err, newUser) {
                 if (err) {

@@ -1,20 +1,36 @@
 angular.module('publicApp')
 
-    .controller('testCtrl', function($rootScope,$scope,$http, testFactory) {
+    .controller('testCtrl', function($rootScope, $scope, $http, $window, testFactory) {
         $scope.someText = "hello test";
 
         testFactory.getUsers().then(function(users) {
             $scope.users = users;
         })
 
-        $scope.logout = function(){
-        delete $http.defaults.headers.common.Authorization;
-        localStorage.removeItem("user");
+        if ($rootScope.isAuthenticated) {
+            $scope.btnlbl = 'Log out';
+        } else {
+            $scope.btnlbl = 'Log in'
+        }
 
-      }
-      testFactory.getPhoto($rootScope.oid).then(function(photo) {
-          $scope.userProfilePhoto = photo;
-      })
+        $scope.changestate = function() {
+
+            if ($rootScope.isAuthenticated) {
+                delete $http.defaults.headers.common.Authorization;
+                $rootScope.isAuthenticated = false;
+                $window.location.reload();
+                localStorage.removeItem("user");
+            } else {
+                //$window.location.href = "/auth/facebook";
+                  $http.get('/facebook').then(function(){})
+
+            }
+
+
+        }
+        testFactory.getPhoto($rootScope.oid).then(function(photo) {
+            $scope.userProfilePhoto = photo;
+        })
 
 
 
@@ -48,7 +64,7 @@ angular.module('publicApp')
 
         thisFactory.getPhoto = function(facebookId) {
 
-            return $http.get('http://graph.facebook.com/'+facebookId+'/picture')
+            return $http.get('http://graph.facebook.com/' + facebookId + '/picture')
                 .then(function(response) {
                     // console.log(response.data);
                     //play with data
@@ -61,8 +77,6 @@ angular.module('publicApp')
 
 
         };
-
-
 
 
 
