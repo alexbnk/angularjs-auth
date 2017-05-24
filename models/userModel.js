@@ -14,7 +14,7 @@ var Schema = mongoose.Schema;
     loginCount: {type:Number},
     roles: [],
     organizations: [],
-    created: Date
+    created: {type: Date}
 //       fName : {type: String},
 //       lName : {type: String},
 //       roles: [],

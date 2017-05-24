@@ -1,22 +1,42 @@
 var express = require('express');
+var app = express();
 var bodyParser = require('body-parser');
-var jwt = require('express-jwt');
-
+var expressJWT = require('express-jwt');
+var config = require('./config/config');
+var morgan      = require('morgan');
 var mongoose = require('mongoose');
+var User = require('./models/userModel'); //used by passport
+
 mongoose.connect('mongodb://localhost/angularjs-auth', function(err) {
     if (err) throw err;
 });
 
-var User = require('./models/userModel'); //used by passport
-
-var ensureAuthenticated = jwt({ secret: 'secret' });
-
-var app = express();
+//var ensureAuthenticated = expressJWT({ secret: config.localKey });
 //Use body parser for
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: false
 }));
+
+// use morgan to log
+app.use(morgan('dev'));
+
+//Routes definitions in external files
+
+var authRoutes = require('./routes/authRoutes');
+app.use('/auth', authRoutes);
+
+
+var apiRoutes = require('./routes/api');
+app.use('/api', apiRoutes);
+
+
+
+
+
+
+
 
 
 //Serve static files in the root directory:
